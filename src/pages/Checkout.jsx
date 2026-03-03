@@ -38,6 +38,7 @@ export default function Checkout() {
 
     const handleConfirmar = async () => {
         setError(null)
+        if (!sucursalId) return setError('Selecciona tu ubicación en la tienda antes de continuar.')
         if (!form.nombre) return setError('Ingresa tu nombre.')
         if (!form.telefono) return setError('Ingresa tu teléfono.')
         if (!form.correo) return setError('Ingresa tu correo.')
@@ -73,7 +74,7 @@ export default function Checkout() {
                 clienteId = nuevoCliente.id
             }
 
-            // 2. Obtener tipo de pago "pendiente" o crear uno
+            // 2. Obtener tipo de pago pendiente
             let { data: tipoPago } = await supabase
                 .from('tipo_pago')
                 .select('id')
@@ -94,10 +95,11 @@ export default function Checkout() {
                 .from('ventas')
                 .insert({
                     clientes_id: clienteId,
-                    sucursales_id: sucursalId || carrito[0]?.sucursalId || null,
+                    sucursales_id: sucursalId,
                     tipo_pago_id: tipoPago.id,
                     notas: form.notas || null,
                     origen: 'ecommerce',
+                    estado: 'pendiente',
                 })
                 .select()
                 .single()
@@ -121,7 +123,7 @@ export default function Checkout() {
             for (const item of carrito) {
                 await supabase.rpc('descontar_inventario', {
                     p_producto_id: item.id,
-                    p_sucursal_id: sucursalId || item.sucursalId,
+                    p_sucursal_id: sucursalId,
                     p_cantidad: item.cantidad,
                 })
             }
@@ -152,7 +154,10 @@ export default function Checkout() {
                     <div className="text-center py-20">
                         <ShoppingCart className="w-16 h-16 text-gray-300 mx-auto mb-4" />
                         <p className="text-gray-400 text-lg">Tu carrito está vacío.</p>
-                        <Link to="/" className="mt-4 inline-block bg-yellow-400 text-gray-900 px-6 py-3 rounded-xl font-medium hover:bg-yellow-300 transition">
+                        <Link
+                            to="/"
+                            className="mt-4 inline-block bg-yellow-400 text-gray-900 px-6 py-3 rounded-xl font-medium hover:bg-yellow-300 transition"
+                        >
                             Ver productos
                         </Link>
                     </div>
@@ -161,6 +166,17 @@ export default function Checkout() {
 
                         {/* Productos */}
                         <div className="md:col-span-2 flex flex-col gap-4">
+
+                            {/* Aviso si no hay sucursal */}
+                            {!sucursalId && (
+                                <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-4">
+                                    <p className="text-yellow-700 text-sm font-medium">
+                                        ⚠️ No has seleccionado tu ubicación.
+                                        <Link to="/" className="underline ml-1">Volver a la tienda</Link> para seleccionarla.
+                                    </p>
+                                </div>
+                            )}
+
                             {carrito.map(item => (
                                 <div key={item.id} className="bg-white rounded-xl shadow-sm p-4 flex gap-4 items-center">
                                     <div className="bg-gray-100 rounded-lg w-20 h-20 flex items-center justify-center overflow-hidden flex-shrink-0">
