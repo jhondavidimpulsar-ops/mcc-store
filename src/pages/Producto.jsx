@@ -82,17 +82,17 @@ export default function Producto() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
 
                     {/* Imagen */}
-                    <div className="bg-white rounded-2xl shadow-sm overflow-hidden flex items-center justify-center h-96">
+                    // Reemplaza el div de la imagen placeholder por esto:
+                    <div className="w-full h-48 bg-gray-100 overflow-hidden">
                         {producto.imagen_url ? (
                             <img
                                 src={producto.imagen_url}
                                 alt={producto.nombre}
-                                className="w-full h-full object-cover"
+                                className="w-full h-full object-cover hover:scale-105 transition duration-300"
                             />
                         ) : (
-                            <div className="flex flex-col items-center gap-3 text-gray-300">
-                                <Package className="w-20 h-20" />
-                                <span className="text-sm">Sin imagen</span>
+                            <div className="w-full h-full flex items-center justify-center text-gray-400 text-sm">
+                                Sin imagen
                             </div>
                         )}
                     </div>

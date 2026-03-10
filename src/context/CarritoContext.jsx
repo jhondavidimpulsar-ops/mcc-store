@@ -1,10 +1,24 @@
-import { createContext, useContext, useState } from 'react'
+import { createContext, useContext, useState, useEffect } from 'react'
+import { supabase } from '../supabaseClient'
 
 const CarritoContext = createContext()
 
 export function CarritoProvider({ children }) {
     const [carrito, setCarrito] = useState([])
-    const [sucursalId, setSucursalId] = useState('')
+    const [sucursalId, setSucursalId] = useState(null)
+    const [sucursales, setSucursales] = useState([])
+
+    useEffect(() => {
+        async function fetchSucursales() {
+            const { data, error } = await supabase
+                .from('sucursales')
+                .select('*')
+
+            console.log('sucursales:', data, error) // para debug
+            if (data) setSucursales(data)
+        }
+        fetchSucursales()
+    }, [])
 
     function agregarAlCarrito(producto, cantidad = 1) {
         const existente = carrito.find(i => i.id === producto.id)
@@ -30,6 +44,7 @@ export function CarritoProvider({ children }) {
 
     function vaciarCarrito() {
         setCarrito([])
+        setSucursalId(null)
     }
 
     const total = carrito.reduce((acc, i) => acc + i.precio * i.cantidad, 0)
@@ -40,12 +55,13 @@ export function CarritoProvider({ children }) {
             carrito,
             sucursalId,
             setSucursalId,
+            sucursales,
             agregarAlCarrito,
             quitarDelCarrito,
             actualizarCantidad,
             vaciarCarrito,
             total,
-            totalItems,
+            totalItems
         }}>
             {children}
         </CarritoContext.Provider>

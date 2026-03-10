@@ -207,17 +207,16 @@ export default function Tienda() {
                                 to={`/producto/${producto.id}`}
                                 className="bg-white rounded-xl shadow-sm hover:shadow-md transition group overflow-hidden"
                             >
-                                <div className="bg-gray-100 h-48 flex items-center justify-center overflow-hidden">
+                                <div className="w-full h-48 bg-gray-100 overflow-hidden">
                                     {producto.imagen_url ? (
                                         <img
                                             src={producto.imagen_url}
                                             alt={producto.nombre}
-                                            className="w-full h-full object-cover group-hover:scale-105 transition duration-300"
+                                            className="w-full h-full object-cover hover:scale-105 transition duration-300"
                                         />
                                     ) : (
-                                        <div className="flex flex-col items-center gap-2 text-gray-300">
-                                            <ShoppingCart className="w-10 h-10" />
-                                            <span className="text-xs">Sin imagen</span>
+                                        <div className="w-full h-full flex items-center justify-center text-gray-400 text-sm">
+                                            Sin imagen
                                         </div>
                                     )}
                                 </div>
